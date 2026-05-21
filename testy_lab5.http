@@ -1,0 +1,53 @@
+### LOGOWANIE (Przygotowanie tokenu)
+# Musimy się zalogować, bo Pkt 3 zadania wymaga "oczekiwanego rezultatu",
+# a bez tokenu dostaniesz 401.
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin_gabrysia",
+  "password": "super_haslo"
+}
+
+> {% client.global.set("token", response.body.token); %}
+
+
+### [Pkt 3] TEST "HAPPY PATH" (Poprawne dane)
+# Opis: Wysyłamy poprawne dane gry. Oczekujemy statusu 200 OK i obiektu JSON.
+POST http://localhost:8080/api/games
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Wiedźmin 3: Dziki Gon",
+  "genre": "RPG",
+  "rating": 98
+}
+
+
+### [Pkt 4] TEST PRZYPADKU NEGATYWNEGO (Zasób nie istnieje)
+# Opis: Próbujemy pobrać grę o ID, którego nie ma w bazie.
+# Oczekujemy statusu 404 Not Found i błędu z GlobalExceptionHandler.
+GET http://localhost:8080/api/games/9999
+Authorization: Bearer {{token}}
+
+
+### [Pkt 5] TEST WALIDACJI BIZNESOWEJ (Zakazany tytuł)
+# Opis: Twoja logika w GameService zabrania tytułu "Error".
+# Oczekujemy statusu 500 lub 400 (zależnie od obsługi) i komunikatu "Tytuł 'Error' jest zakazany!".
+POST http://localhost:8080/api/games
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Error",
+  "genre": "Test",
+  "rating": 50
+}
+
+
+### [Pkt 4/5] TEST NEGATYWNY DLA USUNIĘCIA
+# Opis: Próba usunięcia nieistniejącej gry.
+# Serwis rzuci ResourceNotFoundException, co skutkuje 404.
+DELETE http://localhost:8080/api/games/8888
+Authorization: Bearer {{token}}

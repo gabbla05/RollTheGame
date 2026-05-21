@@ -1,0 +1,43 @@
+### 1. Pobieranie wszystkich gier (Test Response DTO)
+# Sprawdza, czy zwracane są tylko zdefiniowane pola w GameResponse
+GET http://localhost:8080/api/games
+
+### 2. Dodawanie poprawnej gry (Test 200 OK / Success)
+# Punkt 6: poprawne dane -> 200/201
+POST http://localhost:8080/api/games
+Content-Type: application/json
+
+{
+  "title": "Wiedźmin 3: Dziki Gon",
+  "genre": "RPG",
+  "rating": 98
+}
+
+### 3. Błąd walidacji - puste pola (Test 400 Bad Request)
+# Punkt 3 i 4: walidacja pól i globalny handler błędów
+POST http://localhost:8080/api/games
+Content-Type: application/json
+
+{
+  "title": "",
+  "genre": "",
+  "rating": 50
+}
+
+### 4. Błąd walidacji - niepoprawna ocena (Test 400 Bad Request)
+# Punkt 3: Walidacja pola rating (musi być 0-100)
+POST http://localhost:8080/api/games
+Content-Type: application/json
+
+{
+  "title": "Cyberpunk 2077",
+  "genre": "RPG",
+  "rating": 150
+}
+
+### 5. Pobieranie nieistniejącej gry (Test 404 Not Found)
+# Punkt 5: Endpoint zwraca 404 z czytelnym komunikatem
+GET http://localhost:8080/api/games/9999
+
+### 6. Usuwanie nieistniejącej gry (Test 404 Not Found dla Delete)
+DELETE http://localhost:8080/api/games/9999

@@ -1,0 +1,11 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres_demo
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: gabrynia
+      POSTGRES_DB: moja_baza
+    ports:
+      - "5432:5432"
+    restart: always

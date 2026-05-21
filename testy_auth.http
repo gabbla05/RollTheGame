@@ -1,0 +1,104 @@
+### 1. Rejestracja ADMINA (Pkt 1)
+# Hasło zostanie zahashowane BCryptem w bazie
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "admin_gabrysia",
+  "password": "super_haslo",
+  "role": "ROLE_ADMIN"
+}
+
+### 2. Rejestracja ZWYKŁEGO USERA (Pkt 1)
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "user_janusz",
+  "password": "haslo123",
+  "role": "ROLE_USER"
+}
+
+### 3. Logowanie - Pobranie Tokenu (Pkt 2)
+# Skopiuj "token" z odpowiedzi po kliknięciu strzałki
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin_gabrysia",
+  "password": "super_haslo"
+}
+
+### 4. Test BRAKU TOKENU (Pkt 3)
+# Powinno zwrócić HTTP 401 Unauthorized
+GET http://localhost:8080/api/games
+
+### 5. Test Z TOKENEM (Pkt 3)
+# Wklej skopiowany token po słowie Bearer
+GET http://localhost:8080/api/games
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbl9nYWJyeXNpYSIsInJvbGUiOlt7ImF1dGhvcml0eSI6IlJPTEVfQURNSU4ifV0sImlhdCI6MTc3NzIwMTE3OCwiZXhwIjoxNzc3Mjg3NTc4fQ.PS7JoxAdJOJJnKpFfAcjT06hRO6SgHYT9VJ1MIe6-Yg
+
+### 6. Test ROLI (Pkt 5)
+# Zaloguj się jako 'user_janusz', weź jego token i spróbuj usunąć grę
+# Powinno zwrócić HTTP 403 Forbidden
+DELETE http://localhost:8080/api/games/1
+Authorization: Bearer TOKEN_JANUSZA
+
+### 7. Pełny dostęp ADMINA (Pkt 4)
+# Zaloguj się jako 'admin_gabrysia', weź jej token i usuń grę
+# Powinno zwrócić HTTP 204 No Content lub 200 OK (zależnie od kontrolera)
+DELETE http://localhost:8080/api/games/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbl9nYWJyeXNpYSIsInJvbGUiOlt7ImF1dGhvcml0eSI6IlJPTEVfQURNSU4ifV0sImlhdCI6MTc3NzIwMTE3OCwiZXhwIjoxNzc3Mjg3NTc4fQ.PS7JoxAdJOJJnKpFfAcjT06hRO6SgHYT9VJ1MIe6-YgA
+
+### 1. Rejestracja ADMINA
+# Tu NIE MOŻE być nagłówka Authorization!
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "admin_nowy",
+  "password": "haslo",
+  "role": "ROLE_ADMIN"
+}
+
+### 2. Logowanie ADMINA
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin_nowy",
+  "password": "haslo"
+}
+
+> {% client.global.set("admin_token", response.body.token); %}
+
+### 3. Tworzenie gry (Żeby baza nie była pusta)
+POST http://localhost:8080/api/games
+Content-Type: application/json
+Authorization: Bearer {{admin_token}}
+
+{
+  "title": "Nowa Gra",
+  "genre": "Akcja",
+  "rating": 90
+}
+
+### 4. Pełny dostęp ADMINA (Usuwanie)
+# Sprawdź w logach ID dodanej gry, domyślnie 1
+DELETE http://localhost:8080/api/games/1
+Authorization: Bearer {{admin_token}}
+
+###logowanie user
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+"username": "user_janusz",
+"password": "haslo123"
+}
+
+> {% client.global.set("user_token", response.body.token); %}
+
+###usuwanie user
+DELETE http://localhost:8080/api/games/1
+Authorization: Bearer {{user_token}}
