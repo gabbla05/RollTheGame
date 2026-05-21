@@ -13,6 +13,7 @@ public class Game {
     private String title;     // Pole 2: Tytuł
     private String genre;     // Pole 3: Gatunek
     private int rating;       // Pole 4: Ocena (0-100)
+    private String imageUrl;
 
     // Konstruktory, Gettery i Settery
     public Game() {}
@@ -25,4 +26,6 @@ public class Game {
     public void setGenre(String genre) { this.genre = genre; }
     public int getRating() { return rating; }
     public void setRating(int rating) { this.rating = rating; }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

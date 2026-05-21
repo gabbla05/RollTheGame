@@ -36,6 +36,12 @@ public class GameService {
                 .orElseThrow(() -> new ResourceNotFoundException("Gra o id " + id + " nie istnieje"));
     }
 
+    public GameResponse getRandomGame() {
+        return repository.findRandomGame()
+                .map(GameMapper::toResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("Brak gier w bazie!"));
+    }
+
     public GameResponse createGame(GameRequest request) {
         // Punkt 5: Walidacja biznesowa w serwisie
         if (request.getTitle().equalsIgnoreCase("Error")) {

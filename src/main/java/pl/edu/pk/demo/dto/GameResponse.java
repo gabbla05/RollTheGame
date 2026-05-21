@@ -5,6 +5,7 @@ public class GameResponse {
     private String title;
     private String genre;
     private int rating;
+    private String imageUrl;
 
     // Gettery i Settery
     public Long getId() { return id; }
@@ -15,4 +16,6 @@ public class GameResponse {
     public void setGenre(String genre) { this.genre = genre; }
     public int getRating() { return rating; }
     public void setRating(int rating) { this.rating = rating; }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

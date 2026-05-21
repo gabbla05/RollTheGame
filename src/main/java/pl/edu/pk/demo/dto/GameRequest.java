@@ -16,6 +16,7 @@ public class GameRequest {
     @Min(value = 0, message = "Ocena nie może być mniejsza niż 0") // Walidacja pola 2
     @Max(value = 100, message = "Ocena nie może być większa niż 100")
     private int rating;
+    private String imageUrl;
 
     // Gettery i Settery
     public String getTitle() { return title; }
@@ -24,4 +25,6 @@ public class GameRequest {
     public void setGenre(String genre) { this.genre = genre; }
     public int getRating() { return rating; }
     public void setRating(int rating) { this.rating = rating; }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

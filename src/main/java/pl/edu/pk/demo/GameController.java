@@ -25,8 +25,13 @@ public class GameController {
     }
 
     @GetMapping("/{id}")
-    public GameResponse getOne(@PathVariable Long id) {
+    public GameResponse getOne(@PathVariable("id") Long id) { // Zmiana tutaj
         return gameService.getGameById(id);
+    }
+
+    @GetMapping("/find/random")
+    public GameResponse getRandom() {
+        return gameService.getRandomGame();
     }
 
     @PostMapping
@@ -35,13 +40,13 @@ public class GameController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) { // Zmiana tutaj
         gameService.deleteGame(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public GameResponse update(@PathVariable Long id, @Valid @RequestBody GameRequest request) {
+    public GameResponse update(@PathVariable("id") Long id, @Valid @RequestBody GameRequest request) { // Zmiana tutaj
         return gameService.updateGame(id, request);
     }
 }

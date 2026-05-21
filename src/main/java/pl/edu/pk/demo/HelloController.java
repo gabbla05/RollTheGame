@@ -16,10 +16,8 @@ public class HelloController {
         return "Hello, World!";
     }
 
-    // Zadanie 2: Endpoint GET /hello/{name} przyjmujący parametr ścieżki i zwracający
-    //spersonalizowaną odpowiedź (np. "Hello, Anna!")
     @GetMapping("/hello/{name}")
-    public String helloName(@PathVariable String name) {
+    public String helloName(@PathVariable("name") String name) { // Zmiana tutaj
         return "Hello, " + name + "!";
     }
 

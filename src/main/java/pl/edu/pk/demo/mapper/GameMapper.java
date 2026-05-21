@@ -10,6 +10,7 @@ public class GameMapper {
         game.setTitle(request.getTitle());
         game.setGenre(request.getGenre());
         game.setRating(request.getRating());
+        game.setImageUrl(request.getImageUrl());
         return game;
     }
 
@@ -19,6 +20,7 @@ public class GameMapper {
         res.setTitle(game.getTitle());
         res.setGenre(game.getGenre());
         res.setRating(game.getRating());
+        res.setImageUrl(game.getImageUrl());
         return res;
     }
 }
