@@ -39,4 +39,9 @@ public class GameController {
         gameService.deleteGame(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}")
+    public GameResponse update(@PathVariable Long id, @Valid @RequestBody GameRequest request) {
+        return gameService.updateGame(id, request);
+    }
 }

@@ -9,14 +9,19 @@ import pl.edu.pk.demo.exception.ResourceNotFoundException;
 import pl.edu.pk.demo.mapper.GameMapper;
 
 import java.util.List;
+import org.springframework.context.ApplicationEventPublisher;
+import pl.edu.pk.demo.event.GameCreatedEvent;
+import org.springframework.stereotype.Service;
 
 @Service
 public class GameService {
 
     private final GameRepository repository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public GameService(GameRepository repository) {
+    public GameService(GameRepository repository, ApplicationEventPublisher eventPublisher) {
         this.repository = repository;
+        this.eventPublisher = eventPublisher;
     }
 
     public List<GameResponse> getAllGames() {
@@ -38,6 +43,24 @@ public class GameService {
         }
 
         Game game = GameMapper.toEntity(request);
+        Game savedGame = repository.save(game);
+
+        eventPublisher.publishEvent(new GameCreatedEvent(savedGame.getId(), savedGame.getTitle()));
+
+        return GameMapper.toResponse(savedGame);
+    }
+
+    public GameResponse updateGame(Long id, GameRequest request) {
+        pl.edu.pk.demo.Game game = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Gra o id " + id + " nie istnieje"));
+
+        if (request.getTitle().equalsIgnoreCase("Error")) {
+            throw new RuntimeException("Tytuł 'Error' jest zakazany!");
+        }
+
+        game.setTitle(request.getTitle());
+        game.setGenre(request.getGenre());
+        game.setRating(request.getRating());
         return GameMapper.toResponse(repository.save(game));
     }
 

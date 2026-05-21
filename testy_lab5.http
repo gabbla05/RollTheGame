@@ -51,3 +51,26 @@ Authorization: Bearer {{token}}
 # Serwis rzuci ResourceNotFoundException, co skutkuje 404.
 DELETE http://localhost:8080/api/games/8888
 Authorization: Bearer {{token}}
+
+### [Test Update] Aktualizacja gry o ID 1
+# Najpierw pamiętaj o pobraniu tokena (metoda POST /api/auth/login na górze pliku)
+PUT http://localhost:8080/api/games/7
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Wiedźmin 3: Krew i Wino",
+  "genre": "RPG - Dodatek",
+  "rating": 100
+}
+
+### [Test Eventów] Dodanie nowej gry
+POST http://localhost:8080/api/games
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Elden Ring",
+  "genre": "Soulslike",
+  "rating": 99
+}
