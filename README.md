@@ -62,3 +62,20 @@ Stop scrolling your backlog for hours and start playing! **RollTheGame** is a fu
    
 ```bash
    docker-compose up -d
+```
+3. Run the Spring Boot application.
+
+### Frontend Setup
+1. Navigate to the frontend directory.
+```bash
+   cd frontend
+```
+2. Install the required dependencies.
+```bash
+   npm install
+```
+3. Start the Angular development server.
+```bash
+   ng serve
+```
+4. Open your web browser and navigate to the address shown in the terminal (default is http://localhost:4200).
