@@ -43,6 +43,11 @@ public class GameController {
         return gameService.saveGame(game); // Użyj serwisu do zapisu!
     }
 
+    @GetMapping("/find/random")
+    public GameResponse getRandom() {
+        return gameService.getRandomGame();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         gameService.deleteGame(id);

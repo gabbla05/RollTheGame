@@ -7,6 +7,7 @@ import pl.edu.pk.demo.dto.GameRequest;
 import pl.edu.pk.demo.dto.GameResponse;
 import pl.edu.pk.demo.exception.ResourceNotFoundException;
 import pl.edu.pk.demo.mapper.GameMapper;
+import java.util.Collections;
 
 import java.util.List;
 import org.springframework.context.ApplicationEventPublisher;
@@ -37,9 +38,21 @@ public class GameService {
     }
 
     public GameResponse getRandomGame() {
-        return repository.findRandomGame()
-                .map(GameMapper::toResponse)
-                .orElseThrow(() -> new ResourceNotFoundException("Brak gier w bazie!"));
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // 1. Pobieramy listę wszystkich gier tego użytkownika
+        List<Game> userGames = repository.findByUserUsername(username);
+
+        // 2. Jeśli lista jest pusta, rzucamy wyjątek
+        if (userGames.isEmpty()) {
+            throw new ResourceNotFoundException("Brak gier w Twojej bibliotece!");
+        }
+
+        // 3. Losujemy jedną grę z listy
+        Collections.shuffle(userGames);
+        Game randomGame = userGames.get(0);
+
+        return GameMapper.toResponse(randomGame);
     }
 
     public GameResponse createGame(GameRequest request) {
