@@ -1,0 +1,21 @@
+<div style="max-width: 600px; margin: auto; padding-top: 50px;">
+  <h2>Moje Gry</h2>
+  <ul style="list-style: none; padding: 0;">
+
+    <!-- Tutaj używamy games() z nawiasami, bo to sygnał -->
+    @for (game of games(); track game.id) {
+      <li style="border: 1px solid #ccc; margin-bottom: 10px; padding: 10px; display: flex; justify-content: space-between;">
+        <div>
+          <strong>{{game.title}}</strong> (Ocena: {{game.rating}}/100) <br>
+          <small>{{game.genre}}</small>
+        </div>
+        <button (click)="delete(game.id)" style="background: red; color: white; border: none; cursor: pointer; height: 30px;">Usuń</button>
+      </li>
+    } @empty {
+      <li style="text-align: center; color: gray; padding: 20px; border: 1px dashed #ccc;">
+        Lista jest pusta! (Albo brak gier w bazie, albo token JWT wygasł - spróbuj zalogować się ponownie).
+      </li>
+    }
+
+  </ul>
+</div>
