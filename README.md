@@ -16,7 +16,6 @@ Stop scrolling your backlog for hours and start playing! **RollTheGame** is a fu
 | :---: | :---: |
 | ![Admin](images/admin.png) | ![Randomizer](images/random.png) |
 
-*(Note: Ensure your screenshots are placed in the `images/` folder.)*
 
 ---
 
