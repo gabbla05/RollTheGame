@@ -1,23 +1,27 @@
-package pl.edu.pk.demo;
+package pl.edu.pk.demo.model; // Upewnij się, że masz poprawny pakiet
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import pl.edu.pk.demo.model.User;
 
 @Entity
+@Table(name = "game")
 public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;          // Pole 1: ID (wymagane)
-    private String title;     // Pole 2: Tytuł
-    private String genre;     // Pole 3: Gatunek
-    private int rating;       // Pole 4: Ocena (0-100)
+    private Long id;
+
+    private String title;
+    private String genre;
+    private int rating;
     private String imageUrl;
 
-    // Konstruktory, Gettery i Settery
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public Game() {}
 
+    // Gettery i Settery
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getTitle() { return title; }
@@ -28,4 +32,6 @@ public class Game {
     public void setRating(int rating) { this.rating = rating; }
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 }

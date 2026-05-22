@@ -1,6 +1,6 @@
 package pl.edu.pk.demo.mapper;
 
-import pl.edu.pk.demo.Game;
+import pl.edu.pk.demo.model.Game;
 import pl.edu.pk.demo.dto.GameRequest;
 import pl.edu.pk.demo.dto.GameResponse;
 

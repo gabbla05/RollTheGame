@@ -1,10 +1,14 @@
 package pl.edu.pk.demo;
 
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.pk.demo.dto.GameRequest;
 import pl.edu.pk.demo.dto.GameResponse;
+import pl.edu.pk.demo.exception.ResourceNotFoundException;
+import pl.edu.pk.demo.model.Game;
+import pl.edu.pk.demo.model.User;
+import pl.edu.pk.demo.repository.UserRepository;
 import pl.edu.pk.demo.service.GameService;
 
 import java.util.List;
@@ -12,41 +16,36 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/games")
 public class GameController {
+    private final GameService gameService;
+    private final UserRepository userRepository; // Musi być wstrzyknięte
 
-    private final GameService gameService; // Zmiana z repository na service
-
-    public GameController(GameService gameService) {
+    public GameController(GameService gameService, UserRepository userRepository) {
         this.gameService = gameService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
-    public List<GameResponse> getAll() {
-        return gameService.getAllGames();
-    }
-
-    @GetMapping("/{id}")
-    public GameResponse getOne(@PathVariable("id") Long id) { // Zmiana tutaj
-        return gameService.getGameById(id);
-    }
-
-    @GetMapping("/find/random")
-    public GameResponse getRandom() {
-        return gameService.getRandomGame();
+    public List<Game> getGames() {
+        return gameService.getGamesForCurrentUser();
     }
 
     @PostMapping
-    public GameResponse create(@Valid @RequestBody GameRequest request) {
-        return gameService.createGame(request);
+    public Game addGame(@RequestBody GameRequest gameRequest) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Użytkownik nie znaleziony"));
+
+        Game game = new Game();
+        game.setTitle(gameRequest.getTitle());
+        game.setGenre(gameRequest.getGenre());
+        game.setRating(gameRequest.getRating());
+        game.setUser(user);
+        return gameService.saveGame(game); // Użyj serwisu do zapisu!
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) { // Zmiana tutaj
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         gameService.deleteGame(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PutMapping("/{id}")
-    public GameResponse update(@PathVariable("id") Long id, @Valid @RequestBody GameRequest request) { // Zmiana tutaj
-        return gameService.updateGame(id, request);
     }
 }
