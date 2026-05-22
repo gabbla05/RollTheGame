@@ -1,21 +1,49 @@
-<div style="max-width: 600px; margin: auto; padding-top: 50px;">
-  <h2>Moje Gry</h2>
-  <ul style="list-style: none; padding: 0;">
+<!-- Pasek nawigacji -->
+<div class="navbar">
+  <h2>👾 RollTheGame</h2>
+  <button (click)="logout()" class="btn btn-danger">🚪 Wyloguj</button>
+</div>
 
-    <!-- Tutaj używamy games() z nawiasami, bo to sygnał -->
+<!-- Sekcja Główna z potężnym przyciskiem -->
+<div class="hero-section">
+  <h1 class="hero-title">Nie wiesz, w co dzisiaj zagrać?</h1>
+  <button (click)="drawRandomGame()" class="btn-giant">🎲 WYLOSUJ GRĘ</button>
+</div>
+
+<!-- Mroczny Modal (wyskakuje tylko, gdy wylosowano grę) -->
+@if (drawnGame()) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>Twój wybór na dziś to:</h3>
+      <h1 class="modal-game-title">{{ drawnGame().title }}</h1>
+      <p class="modal-game-genre">{{ drawnGame().genre }}</p>
+      <div class="modal-game-rating">⭐ {{ drawnGame().rating }}/100</div>
+      <button class="btn btn-full" (click)="closeModal()">Super, gram!</button>
+    </div>
+  </div>
+}
+
+<!-- Zwykła lista gier poniżej -->
+<div class="content-wrapper">
+  <h3 class="section-title">Wszystkie gry w bibliotece</h3>
+  <ul class="game-grid">
     @for (game of games(); track game.id) {
-      <li style="border: 1px solid #ccc; margin-bottom: 10px; padding: 10px; display: flex; justify-content: space-between;">
-        <div>
-          <strong>{{game.title}}</strong> (Ocena: {{game.rating}}/100) <br>
-          <small>{{game.genre}}</small>
+      <li class="game-card">
+        <div class="game-info">
+          <span class="game-title">{{game.title}}</span>
+          <span class="game-genre">{{game.genre}}</span>
         </div>
-        <button (click)="delete(game.id)" style="background: red; color: white; border: none; cursor: pointer; height: 30px;">Usuń</button>
+        <div class="game-actions">
+          <span class="game-rating">⭐ {{game.rating}}/100</span>
+          @if (isAdmin) {
+            <button (click)="delete(game.id)" class="btn btn-danger">Usuń</button>
+          }
+        </div>
       </li>
     } @empty {
-      <li style="text-align: center; color: gray; padding: 20px; border: 1px dashed #ccc;">
-        Lista jest pusta! (Albo brak gier w bazie, albo token JWT wygasł - spróbuj zalogować się ponownie).
+      <li class="empty-state">
+        <p>Brak gier w bibliotece.</p>
       </li>
     }
-
   </ul>
 </div>

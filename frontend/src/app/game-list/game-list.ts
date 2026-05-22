@@ -6,34 +6,52 @@ import { Api } from '../api';
   selector: 'app-game-list',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './game-list.html'
+  templateUrl: './game-list.html',
+  styleUrl: './game-list.css'
 })
 export class GameList implements OnInit {
-  // Zamieniamy zwykłą tablicę na Sygnał. To "krzyczy" do HTML-a, że dane się zmieniły!
   games = signal<any[]>([]);
+  isAdmin = false;
+  drawnGame = signal<any | null>(null); // Tu będziemy trzymać wylosowaną grę
 
   constructor(private api: Api) {}
 
   ngOnInit() {
+    this.isAdmin = this.api.isAdmin();
     this.loadGames();
   }
 
   loadGames() {
     this.api.getGames().subscribe({
-      next: (data) => {
-        console.log('>>> POBRANE GRY Z BACKENDU:', data);
-        this.games.set(data); // Wrzucamy dane z backendu prosto do sygnału
-      },
-      error: (err) => {
-        console.error('Błąd przy pobieraniu gier:', err);
-      }
+      next: (data) => this.games.set(data),
+      error: (err) => console.error('Błąd przy pobieraniu gier:', err)
     });
   }
 
   delete(id: number) {
     this.api.deleteGame(id).subscribe({
-      next: () => this.loadGames(), // Odśwież po usunięciu
-      error: () => alert('Brak uprawnień ADMINA do usuwania gier!')
+      next: () => this.loadGames(),
+      error: () => alert('Błąd usuwania!')
     });
+  }
+
+  drawRandomGame() {
+    this.api.getRandomGame().subscribe({
+      next: (game) => {
+        this.drawnGame.set(game); // Ustawienie gry automatycznie pokaże wyskakujące okienko!
+      },
+      error: (err) => {
+        console.error('Błąd losowania:', err);
+        alert('Nie udało się wylosować gry. Sprawdź, czy masz gry w bazie!');
+      }
+    });
+  }
+
+  closeModal() {
+    this.drawnGame.set(null); // Czyszczenie chowa okienko
+  }
+
+  logout() {
+    this.api.logout();
   }
 }

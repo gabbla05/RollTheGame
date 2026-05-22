@@ -1,0 +1,14 @@
+.login-container {
+  display: flex; justify-content: center; align-items: center; height: 100vh;
+}
+.login-card {
+  background-color: #1e1e1e; padding: 40px; border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 350px; text-align: center;
+}
+.login-card h2 { margin-top: 0; margin-bottom: 25px; color: #e0aaff; }
+.input-field {
+  width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #333;
+  background-color: #2a2a2a; color: white; border-radius: 8px; box-sizing: border-box; outline: none;
+}
+.input-field:focus { border-color: #7b2cbf; }
+.btn-full { width: 100%; padding: 14px; font-size: 1.1rem; }

@@ -10,11 +10,9 @@ export class Api {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  // 1. Logowanie
   login(user: any) {
     this.http.post<any>(`${this.baseUrl}/auth/login`, user).subscribe({
       next: (res) => {
-        // Sprawdzamy, czy jesteśmy w przeglądarce
         if (typeof localStorage !== 'undefined') {
           localStorage.setItem('token', res.token);
         }
@@ -24,22 +22,47 @@ export class Api {
     });
   }
 
-  // 2. Pobieranie tokenu z pamięci przeglądarki (BEZPIECZNIE)
+  logout() {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('token'); // Usuwamy token
+    }
+    this.router.navigate(['/login']); // Wyrzucamy do logowania
+  }
+
+  // Funkcja wyciągająca rolę z tokena JWT
+  isAdmin(): boolean {
+    if (typeof localStorage !== 'undefined') {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          // JWT składa się z 3 części. Środkowa to dane (payload) w Base64
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const roles = payload.role || [];
+          return roles.some((r: any) => r.authority === 'ROLE_ADMIN');
+        } catch (e) {
+          return false;
+        }
+      }
+    }
+    return false;
+  }
+
   private getHeaders() {
     let token = '';
-    // Sprawdzamy, czy jesteśmy w przeglądarce przed użyciem localStorage
     if (typeof localStorage !== 'undefined') {
       token = localStorage.getItem('token') || '';
     }
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
-  // 3. Pobieranie gier
   getGames() {
     return this.http.get<any[]>(`${this.baseUrl}/games`, { headers: this.getHeaders() });
   }
 
-  // 4. Usuwanie gry
+  getRandomGame() {
+    return this.http.get<any>(`${this.baseUrl}/games/find/random`, { headers: this.getHeaders() });
+  }
+
   deleteGame(id: number) {
     return this.http.delete(`${this.baseUrl}/games/${id}`, { headers: this.getHeaders() });
   }
