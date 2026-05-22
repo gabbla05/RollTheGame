@@ -1,34 +1,56 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms'; // <-- Wymagane dla formularza
 import { Api } from '../api';
 
 @Component({
   selector: 'app-game-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule], // <-- Dodane tutaj!
   templateUrl: './game-list.html',
   styleUrl: './game-list.css'
 })
 export class GameList implements OnInit {
   games = signal<any[]>([]);
+  users = signal<any[]>([]); // Sygnał dla admina
   isAdmin = false;
-  drawnGame = signal<any | null>(null); // Tu będziemy trzymać wylosowaną grę
+  drawnGame = signal<any | null>(null);
+
+  // Zmienna trzymająca wpisywane dane nowej gry
+  newGame = { title: '', genre: '', rating: 50 };
 
   constructor(private api: Api) {}
 
   ngOnInit() {
     this.isAdmin = this.api.isAdmin();
-    this.loadGames();
+
+    // Jeśli Admin - ładujemy użytkowników. Jeśli User - ładujemy gry.
+    if (this.isAdmin) {
+      this.loadUsers();
+    } else {
+      this.loadGames();
+    }
   }
 
+  // --- FUNKCJE USERA ---
   loadGames() {
     this.api.getGames().subscribe({
       next: (data) => this.games.set(data),
-      error: (err) => console.error('Błąd przy pobieraniu gier:', err)
+      error: (err) => console.error(err)
     });
   }
 
-  delete(id: number) {
+  addGame() {
+    this.api.addGame(this.newGame).subscribe({
+      next: () => {
+        this.loadGames(); // Odśwież listę
+        this.newGame = { title: '', genre: '', rating: 50 }; // Wyczyść formularz
+      },
+      error: () => alert('Błąd! Sprawdź czy wypełniłeś wszystko poprawnie.')
+    });
+  }
+
+  deleteGame(id: number) {
     this.api.deleteGame(id).subscribe({
       next: () => this.loadGames(),
       error: () => alert('Błąd usuwania!')
@@ -37,18 +59,30 @@ export class GameList implements OnInit {
 
   drawRandomGame() {
     this.api.getRandomGame().subscribe({
-      next: (game) => {
-        this.drawnGame.set(game); // Ustawienie gry automatycznie pokaże wyskakujące okienko!
-      },
-      error: (err) => {
-        console.error('Błąd losowania:', err);
-        alert('Nie udało się wylosować gry. Sprawdź, czy masz gry w bazie!');
-      }
+      next: (game) => this.drawnGame.set(game),
+      error: () => alert('Brak gier w bazie do wylosowania!')
     });
   }
 
   closeModal() {
-    this.drawnGame.set(null); // Czyszczenie chowa okienko
+    this.drawnGame.set(null);
+  }
+
+  // --- FUNKCJE ADMINA ---
+  loadUsers() {
+    this.api.getUsers().subscribe({
+      next: (data) => this.users.set(data),
+      error: (err) => console.error(err)
+    });
+  }
+
+  deleteUser(id: number) {
+    if (confirm('Na pewno chcesz usunąć tego użytkownika?')) {
+      this.api.deleteUser(id).subscribe({
+        next: () => this.loadUsers(),
+        error: () => alert('Błąd usuwania użytkownika!')
+      });
+    }
   }
 
   logout() {

@@ -22,6 +22,11 @@ export class Api {
     });
   }
 
+  // NOWA METODA: Rejestracja
+  register(user: any) {
+    return this.http.post(`${this.baseUrl}/auth/register`, user, { responseType: 'text' });
+  }
+
   logout() {
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem('token'); // Usuwamy token
@@ -65,5 +70,22 @@ export class Api {
 
   deleteGame(id: number) {
     return this.http.delete(`${this.baseUrl}/games/${id}`, { headers: this.getHeaders() });
+  }
+
+  // --- NOWE METODY ---
+
+  // Dodawanie nowej gry (dla Usera)
+  addGame(game: any) {
+    return this.http.post<any>(`${this.baseUrl}/games`, game, { headers: this.getHeaders() });
+  }
+
+  // Pobieranie użytkowników (dla Admina)
+  getUsers() {
+    return this.http.get<any[]>(`${this.baseUrl}/users`, { headers: this.getHeaders() });
+  }
+
+  // Usuwanie użytkowników (dla Admina)
+  deleteUser(id: number) {
+    return this.http.delete(`${this.baseUrl}/users/${id}`, { headers: this.getHeaders() });
   }
 }

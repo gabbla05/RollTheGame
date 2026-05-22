@@ -1,49 +1,86 @@
 <!-- Pasek nawigacji -->
 <div class="navbar">
-  <h2>👾 RollTheGame</h2>
+  <h2>👾 GameVault {{ isAdmin ? '[PANEL ADMINA]' : '' }}</h2>
   <button (click)="logout()" class="btn btn-danger">🚪 Wyloguj</button>
 </div>
 
-<!-- Sekcja Główna z potężnym przyciskiem -->
-<div class="hero-section">
-  <h1 class="hero-title">Nie wiesz, w co dzisiaj zagrać?</h1>
-  <button (click)="drawRandomGame()" class="btn-giant">🎲 WYLOSUJ GRĘ</button>
-</div>
+<!-- ============================================== -->
+<!-- WIDOK DLA ADMINISTRATORA -->
+<!-- ============================================== -->
+@if (isAdmin) {
+  <div class="content-wrapper" style="margin-top: 50px;">
+    <h3 class="section-title">Zarządzanie Użytkownikami</h3>
+    <ul class="game-grid">
+      @for (user of users(); track user.id) {
+        <li class="game-card">
+          <div class="game-info">
+            <span class="game-title">👤 {{user.username}}</span>
+            <span class="game-genre">Poziom dostępu: {{user.role}}</span>
+          </div>
+          <div class="game-actions">
+            <button (click)="deleteUser(user.id)" class="btn btn-danger">Zbanuj / Usuń</button>
+          </div>
+        </li>
+      } @empty {
+        <li class="empty-state">
+          <p>Brak użytkowników w systemie (poza Tobą!).</p>
+        </li>
+      }
+    </ul>
+  </div>
+} @else {
 
-<!-- Mroczny Modal (wyskakuje tylko, gdy wylosowano grę) -->
-@if (drawnGame()) {
-  <div class="modal-overlay" (click)="closeModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <h3>Twój wybór na dziś to:</h3>
-      <h1 class="modal-game-title">{{ drawnGame().title }}</h1>
-      <p class="modal-game-genre">{{ drawnGame().genre }}</p>
-      <div class="modal-game-rating">⭐ {{ drawnGame().rating }}/100</div>
-      <button class="btn btn-full" (click)="closeModal()">Super, gram!</button>
+  <!-- ============================================== -->
+    <!-- WIDOK DLA ZWYKŁEGO UŻYTKOWNIKA -->
+    <!-- ============================================== -->
+
+  <div class="hero-section">
+    <h1 class="hero-title">Nie wiesz, w co dzisiaj zagrać?</h1>
+    <button (click)="drawRandomGame()" class="btn-giant">🎲 WYLOSUJ GRĘ</button>
+  </div>
+
+  @if (drawnGame()) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <h3>Twój wybór na dziś to:</h3>
+        <h1 class="modal-game-title">{{ drawnGame().title }}</h1>
+        <p class="modal-game-genre">{{ drawnGame().genre }}</p>
+        <div class="modal-game-rating">⭐ {{ drawnGame().rating }}/100</div>
+        <button class="btn btn-full" (click)="closeModal()">Super, gram!</button>
+      </div>
     </div>
+  }
+
+  <div class="content-wrapper">
+    <!-- NOWY FORMULARZ DODAWANIA GRY -->
+    <div class="add-game-card">
+      <h3 style="margin-top: 0; color: #e0aaff;">➕ Dodaj nową grę do biblioteki</h3>
+      <form (ngSubmit)="addGame()" style="display: flex; gap: 10px;">
+        <input type="text" [(ngModel)]="newGame.title" name="title" placeholder="Tytuł" required class="input-field" style="margin-bottom: 0;">
+        <input type="text" [(ngModel)]="newGame.genre" name="genre" placeholder="Gatunek" required class="input-field" style="margin-bottom: 0;">
+        <input type="number" [(ngModel)]="newGame.rating" name="rating" placeholder="Ocena" required class="input-field" style="margin-bottom: 0; max-width: 100px;">
+        <button type="submit" class="btn">Dodaj</button>
+      </form>
+    </div>
+
+    <h3 class="section-title">Wszystkie gry w bibliotece</h3>
+    <ul class="game-grid">
+      @for (game of games(); track game.id) {
+        <li class="game-card">
+          <div class="game-info">
+            <span class="game-title">{{game.title}}</span>
+            <span class="game-genre">{{game.genre}}</span>
+          </div>
+          <div class="game-actions">
+            <span class="game-rating">⭐ {{game.rating}}/100</span>
+            <button (click)="deleteGame(game.id)" class="btn btn-danger">Usuń</button>
+          </div>
+        </li>
+      } @empty {
+        <li class="empty-state">
+          <p>Brak gier w bibliotece.</p>
+        </li>
+      }
+    </ul>
   </div>
 }
-
-<!-- Zwykła lista gier poniżej -->
-<div class="content-wrapper">
-  <h3 class="section-title">Wszystkie gry w bibliotece</h3>
-  <ul class="game-grid">
-    @for (game of games(); track game.id) {
-      <li class="game-card">
-        <div class="game-info">
-          <span class="game-title">{{game.title}}</span>
-          <span class="game-genre">{{game.genre}}</span>
-        </div>
-        <div class="game-actions">
-          <span class="game-rating">⭐ {{game.rating}}/100</span>
-          @if (isAdmin) {
-            <button (click)="delete(game.id)" class="btn btn-danger">Usuń</button>
-          }
-        </div>
-      </li>
-    } @empty {
-      <li class="empty-state">
-        <p>Brak gier w bibliotece.</p>
-      </li>
-    }
-  </ul>
-</div>

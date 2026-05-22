@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // <--- TA LINIJKA URUCHAMIA CORS W SECURITY
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // <--- TA LINIJKA PRZEPUSZCZA ZAPYTANIA PRZEGLĄDARKI
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/v3/api-docs",
@@ -35,7 +35,8 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/error"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/api/games/**").hasRole("ADMIN")
+                        // ZMIANA TUTAJ: Admin rządzi ścieżką /api/users, a /api/games jest dla wszystkich zalogowanych
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
